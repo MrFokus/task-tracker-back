@@ -5,16 +5,19 @@ import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from "bcrypt";
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private userRepository:Repository<User>
+    private userRepository: Repository<User>,
+    private authService: AuthService,
   ) {
     
   }
-   async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
+    try {
       const hash = await bcrypt.hash(createUserDto.password, +process.env.PASSWORD_HASH_SALT);
       let existUser = await this.userRepository.find({
         where: {
@@ -22,10 +25,15 @@ export class UserService {
           mail: createUserDto.mail,
         }
       })
-      if (existUser.length>0) {
+      if (existUser.length > 0) {
         throw new BadRequestException('User alredy exist')
       }
-      return await this.userRepository.save({ ...createUserDto, password: hash })
+      await this.userRepository.save({ ...createUserDto, password: hash })
+      return await this.authService.auth({ login: createUserDto.login, password: createUserDto.password })
+    }
+    catch (e) {
+      return e
+    }
   }
 
   findAll() {
