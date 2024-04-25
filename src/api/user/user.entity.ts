@@ -10,14 +10,17 @@ export class User {
   @PrimaryGeneratedColumn("increment",{ name: "id" })
   id: number;
 
-  @Column("character varying", { name: "login", length: 256 })
+  @Column("character varying", { name: "login", length: 256})
   login: string;
 
-  @Column("character varying", { name: "password", length: 32 })
+  @Column("character varying", { name: "password", length: 60 })
   password: string;
 
   @Column("character varying", { name: "name", length: 256 })
   name: string;
+
+  @Column("character varying", { name: "mail", length: 256 })
+  mail: string;
 
   @Column("character varying", { name: "photo", nullable: true, length: 1024 })
   photo: string | null;

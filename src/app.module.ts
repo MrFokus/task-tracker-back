@@ -19,6 +19,7 @@ import { Project } from './api/project/project.entity';
 import { Subtask } from './api/subtask/subtask.entity';
 import { Task } from './api/task/task.entity';
 import { Team } from './api/team/team.entity';
+import { AuthModule } from './api/auth/auth.module';
 
 
 
@@ -36,7 +37,7 @@ import { Team } from './api/team/team.entity';
         database: config.get('DB_NAME'),
         entities: [User,Attachment,Group,Mark,Project,Subtask,Task,Team],
         synchronize: true,
-        autoLoadEntities:true,
+        // autoLoadEntities:true,
       }),
       inject: [ConfigService]
     }),
@@ -47,7 +48,8 @@ import { Team } from './api/team/team.entity';
     ProjectModule,
     SubtaskModule,
     TaskModule,
-    TeamModule
+    TeamModule,
+    AuthModule
 
   ],
   controllers: [AppController],
