@@ -17,11 +17,12 @@ export class AuthService {
     async auth(authDto: AuthDto) {
         console.log(authDto);
 
-        let user = await this.userReposytory.findOne({
-            where: {
-                login: authDto.login
-            }
-        })
+        let user = await this.userReposytory
+            .createQueryBuilder('user')
+            .addSelect('user.password')
+            .where('user.login = :login', { login: authDto.login })
+            .getOne()
+
         if (!user) {
             throw new UnauthorizedException('User not found')
         }
@@ -30,16 +31,16 @@ export class AuthService {
             throw new UnauthorizedException('Incorrect password')
         }
         return {
-            access_token: await this.jwtService.signAsync({sub:user.id, mail:user.mail, name:user.name})
+            access_token: await this.writeToToken({ sub: user.id, mail: user.mail, name: user.name })
         }
     }
 
-    JwtDecode(token:string) {
-        return this.jwtService.decode(token)
+    async writeToToken(payload) {
+        return await this.jwtService.signAsync(payload)
     }
 
     async JwtVerify(token: string) {
-        return await this.jwtService.verifyAsync(token,{secret:process.env.JWT_SECRET})
+        return await this.jwtService.verifyAsync(token, { secret: process.env.JWT_SECRET })
     }
 
 }

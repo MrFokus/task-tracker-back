@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { User } from "../user/user.entity";
 import { Project } from "../project/project.entity";
+import { Participates } from "../otherEntities/participates.entity";
 
 // @Index("pk_team", ["id"], { unique: true })
 // @Index("team_pk", ["id"], { unique: true })
@@ -29,14 +30,14 @@ export class Team {
   @Column("character varying", { name: "photo", nullable: true, length: 1024 })
   photo: string | null;
 
-  @ManyToMany(() => User, (user) => user.teams)
-  @JoinTable({
-    name: "participates",
-    joinColumns: [{ name: "team_id", referencedColumnName: "id" }],
-    inverseJoinColumns: [{ name: "user_id", referencedColumnName: "id" }],
-    schema: "public",
-  })
-  users: User[];
+  // @ManyToMany(() => User, (user) => user.teams)
+  // @JoinTable({
+  //   name: "participates",
+  //   joinColumns: [{ name: "team_id", referencedColumnName: "id" }],
+  //   inverseJoinColumns: [{ name: "user_id", referencedColumnName: "id" }],
+  //   schema: "public",
+  // })
+  // users: User[];
 
   @OneToMany(() => Project, (project) => project.team)
   projects: Project[];
@@ -47,4 +48,7 @@ export class Team {
   })
   @JoinColumn([{ name: "user_id", referencedColumnName: "id" }])
   user: User;
+
+  @ManyToOne(() => Participates, (participates) => participates.team)
+  participates:Participates[]
 }

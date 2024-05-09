@@ -13,6 +13,7 @@ import { User } from "../user/user.entity";
 import { Group } from "../group/group.entity";
 import { Team } from "../team/team.entity";
 import { Task } from "../task/task.entity";
+import { Directs } from "../otherEntities/directs.entity";
 
 // @Index("pk_project", ["id"], { unique: true })
 // @Index("project_pk", ["id"], { unique: true })
@@ -34,14 +35,17 @@ export class Project {
   @Column("character varying", { name: "photo", nullable: true, length: 1024 })
   photo: string | null;
 
-  @ManyToMany(() => User, (user) => user.projects)
-  @JoinTable({
-    name: "directs",
-    joinColumns: [{ name: "project_id", referencedColumnName: "id" }],
-    inverseJoinColumns: [{ name: "user_id", referencedColumnName: "id" }],
-    schema: "public",
-  })
-  users: User[];
+  // @ManyToMany(() => User, (user) => user.directs)
+  // @JoinTable({
+  //   name: "directs",
+  //   joinColumns: [{ name: "project_id", referencedColumnName: "id" }],
+  //   inverseJoinColumns: [{ name: "user_id", referencedColumnName: "id" }],
+  //   schema: "public",
+  // })
+  // directs: User[];
+
+  @OneToMany(() => Directs, (directs) => directs.project)
+  directs:Directs[]
 
   @OneToMany(() => Group, (group) => group.project)
   groups: Group[];

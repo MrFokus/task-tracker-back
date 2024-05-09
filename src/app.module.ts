@@ -1,3 +1,4 @@
+import { RoleModule } from './api/role/role.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -20,14 +21,18 @@ import { Subtask } from './api/subtask/subtask.entity';
 import { Task } from './api/task/task.entity';
 import { Team } from './api/team/team.entity';
 import { AuthModule } from './api/auth/auth.module';
+import { Directs } from './api/otherEntities/directs.entity';
+import { Role } from './api/role/role.entity';
+import { Participates } from './api/otherEntities/participates.entity';
 
 
 
 @Module({
   imports: [
+    RoleModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
-      imports:[ConfigModule],
+      imports: [ConfigModule],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
         host: config.get('DB_HOST'),
@@ -35,7 +40,7 @@ import { AuthModule } from './api/auth/auth.module';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
-        entities: [User,Attachment,Group,Mark,Project,Subtask,Task,Team],
+        entities: [User, Attachment, Group, Mark, Project, Subtask, Task, Team, Directs,Role,Participates],
         synchronize: true,
         // autoLoadEntities:true,
       }),

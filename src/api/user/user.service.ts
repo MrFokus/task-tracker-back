@@ -1,9 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import * as bcrypt from "bcrypt";
 import { AuthService } from '../auth/auth.service';
 
@@ -14,7 +14,7 @@ export class UserService {
     private userRepository: Repository<User>,
     private authService: AuthService,
   ) {
-    
+
   }
   async create(createUserDto: CreateUserDto) {
     try {
@@ -34,6 +34,38 @@ export class UserService {
     catch (e) {
       return e
     }
+  }
+
+  async getUserByToken(token: string) {
+    try {
+      token = token.replace('Bearer ', '')
+      let userFromToken = await this.authService.JwtVerify(token)
+      console.log(userFromToken);
+
+      let user = await this.userRepository.findOne({
+        where: {
+          id: userFromToken.sub
+        }
+      })
+      console.log(user);
+
+      return {
+        name: user.name,
+        mail: user.mail,
+        photo: user.photo
+      }
+    }
+    catch (e) {
+      throw new UnauthorizedException()
+    }
+
+  }
+
+  async searchUser(name: string) {
+    return (await this.userRepository.findBy({
+      name: Like(`%${name}%`),
+      login: Like(`%${name}%`)
+    }))
   }
 
   findAll() {
