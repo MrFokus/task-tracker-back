@@ -13,18 +13,15 @@ import { User } from "../user/user.entity";
 import { Group } from "../group/group.entity";
 import { Team } from "../team/team.entity";
 import { Task } from "../task/task.entity";
-import { Directs } from "../otherEntities/directs.entity";
+import { ParticipatesProject } from "../otherEntities/participatesProject.entity";
 
-// @Index("pk_project", ["id"], { unique: true })
-// @Index("project_pk", ["id"], { unique: true })
-// @Index("ongoing_fk", ["teamId"], {})
 @Entity("project", { schema: "public" })
 export class Project {
   @PrimaryGeneratedColumn("increment",{ name: "id" })
   id: number;
 
-  @Column("integer", { name: "team_id" })
-  teamId: number;
+  // @Column("integer", { name: "team_id" })
+  // teamId: number;
 
   @Column("character varying", { name: "name", length: 256 })
   name: string;
@@ -35,27 +32,21 @@ export class Project {
   @Column("character varying", { name: "photo", nullable: true, length: 1024 })
   photo: string | null;
 
-  // @ManyToMany(() => User, (user) => user.directs)
-  // @JoinTable({
-  //   name: "directs",
-  //   joinColumns: [{ name: "project_id", referencedColumnName: "id" }],
-  //   inverseJoinColumns: [{ name: "user_id", referencedColumnName: "id" }],
-  //   schema: "public",
-  // })
-  // directs: User[];
-
-  @OneToMany(() => Directs, (directs) => directs.project)
-  directs:Directs[]
+  @OneToMany(() => ParticipatesProject, (participatesProject) => participatesProject.project)
+  directs:ParticipatesProject[]
 
   @OneToMany(() => Group, (group) => group.project)
   groups: Group[];
 
-  @ManyToOne(() => Team, (team) => team.projects, {
-    onDelete: "RESTRICT",
-    onUpdate: "RESTRICT",
-  })
-  @JoinColumn([{ name: "team_id", referencedColumnName: "id" }])
-  team: Team;
+  // @ManyToOne(() => Team, (team) => team.projects, {
+  //   onDelete: "RESTRICT",
+  //   onUpdate: "RESTRICT",
+  // })
+  // @JoinColumn([{ name: "team_id", referencedColumnName: "id" }])
+  // team: Team;
+
+  @ManyToMany(() => Team, (team) => team.projects, { nullable: false })
+  teams:Team[]
 
   @OneToMany(() => Task, (task) => task.project)
   tasks: Task[];

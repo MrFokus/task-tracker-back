@@ -6,25 +6,19 @@ import { Role } from "../role/role.entity";
 import { Team } from "../team/team.entity";
 
 @Entity()
-export class Participates {
-    @PrimaryColumn()
-    user_id: number
+export class ParticipatesTeam {
+    @PrimaryGeneratedColumn("increment", { name: "id" })
+    id: number;
 
-    @PrimaryColumn()
-    team_id: number
-
-    @PrimaryColumn()
-    role_id: number
-
-    @ManyToOne(() => User, (user) => user.participates)
+    @ManyToOne(() => User, (user) => user.participates,{nullable:false})
     @JoinColumn({name:'user_id'})
     user: User
 
-    @ManyToOne(() => Team, (team) => team.participates)
+    @ManyToOne(() => Team, (team) => team.participatesTeam,{nullable:false})
     @JoinColumn({name:'team_id'})
     team: Team
 
-    @ManyToOne(() => Role, (role) => role.participates)
+    @ManyToOne(() => Role, (role) => role.participates,{nullable:false})
     @JoinColumn({name:'role_id'})
     role: Role
 

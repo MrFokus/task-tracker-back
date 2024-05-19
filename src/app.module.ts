@@ -21,9 +21,12 @@ import { Subtask } from './api/subtask/subtask.entity';
 import { Task } from './api/task/task.entity';
 import { Team } from './api/team/team.entity';
 import { AuthModule } from './api/auth/auth.module';
-import { Directs } from './api/otherEntities/directs.entity';
+import { ParticipatesProject } from './api/otherEntities/participatesProject.entity';
 import { Role } from './api/role/role.entity';
-import { Participates } from './api/otherEntities/participates.entity';
+import { ParticipatesTeam } from './api/otherEntities/participatesTeam.entity';
+import { AuthGuard } from './api/auth/auth.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { DataSource } from 'typeorm';
 
 
 
@@ -40,7 +43,7 @@ import { Participates } from './api/otherEntities/participates.entity';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
-        entities: [User, Attachment, Group, Mark, Project, Subtask, Task, Team, Directs,Role,Participates],
+        entities: [User, Attachment, Group, Mark, Project, Subtask, Task, Team, ParticipatesProject, Role, ParticipatesTeam],
         synchronize: true,
         // autoLoadEntities:true,
       }),
@@ -55,10 +58,17 @@ import { Participates } from './api/otherEntities/participates.entity';
     TaskModule,
     TeamModule,
     AuthModule
-
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    }
+    ,],
+
 })
 export class AppModule {
+  constructor(private dataSource: DataSource){}
 }

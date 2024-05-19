@@ -1,18 +1,21 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Directs } from "../otherEntities/directs.entity";
-import { Participates } from "../otherEntities/participates.entity";
+import { ParticipatesProject } from "../otherEntities/participatesProject.entity";
+import { ParticipatesTeam } from "../otherEntities/participatesTeam.entity";
 
 @Entity()
 export class Role {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("increment",{name:'id'})
     id: number
 
     @Column()
     name: string
 
-    @OneToMany(() => Directs, (directs) => directs.role)
-    directs: Directs[]
+    @Column({name:'name_ru'})
+    nameRu: string
 
-    @OneToMany(() => Participates, (participates) => participates.role)
-    participates: Directs[]
+    @OneToMany(() => ParticipatesProject, (participatesProject) => participatesProject.role)
+    directs: ParticipatesProject[]
+
+    @OneToMany(() => ParticipatesTeam, (participates) => participates.role)
+    participates: ParticipatesTeam[]
 }

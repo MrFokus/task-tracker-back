@@ -9,20 +9,14 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { User } from "../user/user.entity";
 import { Project } from "../project/project.entity";
-import { Participates } from "../otherEntities/participates.entity";
+import { ParticipatesTeam } from "../otherEntities/participatesTeam.entity";
 
-// @Index("pk_team", ["id"], { unique: true })
-// @Index("team_pk", ["id"], { unique: true })
-// @Index("directs_fk", ["userId"], {})
+
 @Entity("team", { schema: "public" })
 export class Team {
-  @PrimaryGeneratedColumn("increment",{ name: "id" })
+  @PrimaryGeneratedColumn("increment", { name: "id" })
   id: number;
-
-  @Column("integer", { name: "user_id" })
-  userId: number;
 
   @Column("character varying", { name: "name", length: 256 })
   name: string;
@@ -30,25 +24,21 @@ export class Team {
   @Column("character varying", { name: "photo", nullable: true, length: 1024 })
   photo: string | null;
 
-  // @ManyToMany(() => User, (user) => user.teams)
-  // @JoinTable({
-  //   name: "participates",
-  //   joinColumns: [{ name: "team_id", referencedColumnName: "id" }],
-  //   inverseJoinColumns: [{ name: "user_id", referencedColumnName: "id" }],
-  //   schema: "public",
-  // })
-  // users: User[];
 
-  @OneToMany(() => Project, (project) => project.team)
+  @ManyToMany(() => Project, (project) => project.teams)
+  @JoinTable({
+    name: 'project_teams',
+    joinColumn: {
+      name: "team_id",
+      referencedColumnName: "id"
+  },
+  inverseJoinColumn: {
+      name: "project_id",
+      referencedColumnName: "id"
+  }
+  })
   projects: Project[];
 
-  @ManyToOne(() => User, (user) => user.teams2, {
-    onDelete: "RESTRICT",
-    onUpdate: "RESTRICT",
-  })
-  @JoinColumn([{ name: "user_id", referencedColumnName: "id" }])
-  user: User;
-
-  @ManyToOne(() => Participates, (participates) => participates.team)
-  participates:Participates[]
+  @OneToMany(() => ParticipatesTeam, (participatesTeam) => participatesTeam.team,{nullable:false})
+  participatesTeam:ParticipatesTeam[]
 }

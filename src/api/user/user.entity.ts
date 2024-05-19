@@ -2,8 +2,8 @@ import { Column, Entity, Index, ManyToMany, OneToMany, PrimaryGeneratedColumn, U
 import { Project } from "../project/project.entity";
 import { Team } from "../team/team.entity";
 import { Task } from "../task/task.entity";
-import { Directs } from "../otherEntities/directs.entity";
-import { Participates } from "../otherEntities/participates.entity";
+import { ParticipatesProject } from "../otherEntities/participatesProject.entity";
+import { ParticipatesTeam } from "../otherEntities/participatesTeam.entity";
 
 // @Index("pk_user", ["id"], { unique: true })
 // @Index("user_pk", ["id"], { unique: true })
@@ -31,18 +31,15 @@ export class User {
   // @ManyToMany(() => Project, (project) => project.directs)
   // directs: Project[];
 
-  @OneToMany(() => Directs, (directs) => directs.user)
-  directs: Directs[]
+  @OneToMany(() => ParticipatesProject, (participatesProject) => participatesProject.user)
+  directs: ParticipatesProject[]
   
-  @OneToMany(() => Participates, (participates) => participates.user)
-  participates:Directs[]
+  @OneToMany(() => ParticipatesTeam, (participatesTeam) => participatesTeam.user)
+  participates:ParticipatesTeam[]
 
   // @ManyToMany(() => Team, (team) => team.users)
   // teams: Team[];
 
   @ManyToMany(() => Task, (task) => task.users)
   tasks: Task[];
-
-  @OneToMany(() => Team, (team) => team.user)
-  teams2: Team[];
 }
