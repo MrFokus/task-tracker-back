@@ -17,6 +17,11 @@ export class TeamController {
     return this.teamService.searchTeam(name,user.sub)
   }
 
+  @Get('/users')
+  getTeamUsers(@Query('teamId') teamId: string) {
+    return this.teamService.getUserTeam(+teamId)
+  }
+
   @Get()
   findAllForUser(@Req() { user }: {user: IUser }) {
     return this.teamService.findAllForUser(user.sub);

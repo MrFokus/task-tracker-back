@@ -1,3 +1,4 @@
+import { ParticipatesTeam } from './../otherEntities/participatesTeam.entity';
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -66,6 +67,34 @@ export class UserService {
       name: Like(`%${name}%`),
       login: Like(`%${name}%`)
     }))
+  }
+
+  async getUserInTeam(teamId: number) {
+    // return this.userRepository.find({
+    //   select: {
+    //     participates: {
+    //       user:true
+    //     }
+    //   },
+    //   relations: {
+    //     participates: {
+    //       user:true,
+    //       team: {
+    //         projects: true
+    //       }
+    //     },
+    //   },
+    //   where: {
+    //     participates: {
+    //       team: {
+    //         projects: {
+    //           id:projectId
+    //         }
+            
+    //       }
+    //     },
+    //   }
+    // })
   }
 
   findAll() {

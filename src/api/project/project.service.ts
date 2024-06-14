@@ -78,7 +78,9 @@ export class ProjectService {
   async findOne(id: number) {
     let res = await this.projectRepo.findOne({
       relations: {
-        groups: true
+        groups: true,
+        teams: true,
+        
       },
       where: {
         id: id,
@@ -96,6 +98,8 @@ export class ProjectService {
     return res
 
   }
+
+
 
   update(id: number, updateProjectDto: UpdateProjectDto) {
     return `This action updates a #${id} project`;

@@ -16,6 +16,10 @@ export class Mark {
   @Column("character varying", { name: "color", length: 8 })
   color: string;
 
+
+  @Column("character varying", { name: "background", length: 8 })
+  background: string;
+
   @ManyToOne(() => Project, (project) => project.marks)
   project:Project
 

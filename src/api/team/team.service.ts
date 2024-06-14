@@ -120,6 +120,21 @@ export class TeamService {
     }))
   }
 
+  async getUserTeam(teamId: number) {
+    return this.participatesRepo.find({
+      select:['user'],
+      relations: {
+        user: true,
+        team:true
+      },
+      where: {
+        team: {
+          id:teamId
+        }
+      }
+    })
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} team`;
   }

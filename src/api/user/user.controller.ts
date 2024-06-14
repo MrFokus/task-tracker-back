@@ -20,11 +20,17 @@ export class UserController {
   async getUserByToken(@Headers('authorization') access_token: string) {
     return await this.userService.getUserByToken(access_token);
   }
+
   @UseGuards(AuthGuard)
   @Get('/search')
   searchUser(@Query('name') name: string) {
     return this.userService.searchUser(name)
   }
+
+  // @Get('/project')
+  // getUserInProject(@Query('projectId') projectId: number) {
+  //   return this.userService.getUserInProject(+projectId)
+  // }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { MarkService } from './mark.service';
 import { CreateMarkDto } from './dto/create-mark.dto';
 import { UpdateMarkDto } from './dto/update-mark.dto';
@@ -13,8 +13,8 @@ export class MarkController {
   }
 
   @Get()
-  findAll() {
-    return this.markService.findAll();
+  findAll(@Query('projectId') projectId:string) {
+    return this.markService.findAll(+projectId);
   }
 
   @Get(':id')
