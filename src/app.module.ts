@@ -1,3 +1,4 @@
+import { ProjectWsGateway } from './api/project/project-ws.gateway';
 import { RoleModule } from './api/role/role.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
@@ -70,5 +71,5 @@ import { DataSource } from 'typeorm';
 
 })
 export class AppModule {
-  constructor(private dataSource: DataSource){}
+  constructor(private dataSource: DataSource) { }
 }

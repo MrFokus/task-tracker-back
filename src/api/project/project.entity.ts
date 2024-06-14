@@ -14,6 +14,7 @@ import { Group } from "../group/group.entity";
 import { Team } from "../team/team.entity";
 import { Task } from "../task/task.entity";
 import { ParticipatesProject } from "../otherEntities/participatesProject.entity";
+import { Mark } from "../mark/mark.entity";
 
 @Entity("project", { schema: "public" })
 export class Project {
@@ -38,16 +39,13 @@ export class Project {
   @OneToMany(() => Group, (group) => group.project)
   groups: Group[];
 
-  // @ManyToOne(() => Team, (team) => team.projects, {
-  //   onDelete: "RESTRICT",
-  //   onUpdate: "RESTRICT",
-  // })
-  // @JoinColumn([{ name: "team_id", referencedColumnName: "id" }])
-  // team: Team;
 
   @ManyToMany(() => Team, (team) => team.projects, { nullable: false })
   teams:Team[]
 
   @OneToMany(() => Task, (task) => task.project)
   tasks: Task[];
+
+  @OneToMany(() => Mark, (mark) => mark.project)
+  marks:Mark[]
 }

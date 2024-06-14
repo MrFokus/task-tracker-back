@@ -37,15 +37,20 @@ export class TeamService {
   }
 
   async findByTeam(id: number) {
-    return await this.teamRepo.findOne({
+    let result = await this.teamRepo.findOne({
       relations: {
-        participatesTeam:true,
+        participatesTeam: {
+          role:true,
+          user:true,
+        },
         projects: true,
       },
       where: {
         id: id
       }
     })
+
+    return result
   }
 
   async getTeamForUser(userId: number): Promise<any[]> {

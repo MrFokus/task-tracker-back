@@ -49,7 +49,18 @@ export class Task {
   @OneToMany(() => Attachment, (attachment) => attachment.task)
   attachments: Attachment[];
 
-  @OneToMany(() => Mark, (mark) => mark.task)
+  @ManyToMany(() => Mark, (mark) => mark.task)
+  @JoinTable({
+    name: 'mark_task',
+    joinColumn: {
+      name: "task_id",
+      referencedColumnName: "id"
+  },
+  inverseJoinColumn: {
+      name: "mark_id",
+      referencedColumnName: "id"
+  }
+  })
   marks: Mark[];
 
   @ManyToMany(() => User, (user) => user.tasks)

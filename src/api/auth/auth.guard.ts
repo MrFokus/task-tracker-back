@@ -11,7 +11,7 @@ import { Request } from 'express';
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService) { }
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {    
     let url = context.switchToHttp().getRequest().url
     let method = context.switchToHttp().getRequest().method
     let exception = [
