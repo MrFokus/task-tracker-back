@@ -9,16 +9,29 @@ import { Group } from './group.entity';
 export class GroupService {
   constructor(
     @InjectRepository(Group)
-    private readonly groupRepo:Repository<Group>
-  ) { }
+    private readonly groupRepo: Repository<Group>
+  ) { 
+  }
+  INIT_GROUP = [
+    {
+      name: 'Запланировано'
+    },
+    {
+      name: 'В работе'
+    },
+    {
+      name: 'Выполнено'
+    },
+  ]
+
 
   async create(createGroupDto: CreateGroupDto) {
     let group = await this.groupRepo.findOneBy({
-      projectId:createGroupDto.projectId,name:createGroupDto.name
+      projectId: createGroupDto.projectId, name: createGroupDto.name
     })
     console.log(group);
-    
-    if(!group)
+
+    if (!group)
       return this.groupRepo.save({ projectId: createGroupDto.projectId, name: createGroupDto.name })
     else
       throw new ConflictException
@@ -36,7 +49,12 @@ export class GroupService {
     return `This action updates a #${id} group`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} group`;
+  async remove(id: number) {
+    let group = await this.groupRepo.findOneBy({
+      id: id
+    })
+    if(!this.INIT_GROUP.find(el=>el.name == group.name))
+    await this.groupRepo.delete(id)
+    return group
   }
 }

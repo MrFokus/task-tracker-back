@@ -2,14 +2,19 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { MarkService } from './mark.service';
 import { CreateMarkDto } from './dto/create-mark.dto';
 import { UpdateMarkDto } from './dto/update-mark.dto';
+import { ProjectWsGateway } from '../project/project-ws.gateway';
 
 @Controller('mark')
 export class MarkController {
-  constructor(private readonly markService: MarkService) {}
+  constructor(private readonly markService: MarkService, private readonly ws: ProjectWsGateway) {}
 
   @Post()
-  create(@Body() createMarkDto: CreateMarkDto) {
-    return this.markService.create(createMarkDto);
+  async create(@Body() createMarkDto: CreateMarkDto) {
+    let res = await this.markService.create(createMarkDto);
+    if (res?.project?.id) {
+      this.ws.refresh( res.project.id.toString())
+    }
+    return res
   }
 
   @Get()
@@ -28,7 +33,9 @@ export class MarkController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.markService.remove(+id);
+  async remove(@Param('id') id: string) {
+    let res = await this.markService.remove(+id);
+    this.ws.refresh(res.projectId.toString())
+    return res
   }
 }

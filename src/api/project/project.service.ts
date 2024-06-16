@@ -20,19 +20,7 @@ export class ProjectService {
   ) { }
 
   async create(createProjectDto: CreateProjectDto) {
-
-    const INIT_GROUP = [
-      {
-        name: 'Запланировано'
-      },
-      {
-        name: 'В работе'
-      },
-      {
-        name: 'Выполнено'
-      },
-    ]
-
+    const INIT_GROUP = this.groupService.INIT_GROUP
     try {
       let project = await this.projectRepo.save({
         name: createProjectDto.name,

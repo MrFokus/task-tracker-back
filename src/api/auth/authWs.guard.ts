@@ -13,7 +13,6 @@ export class AuthGuardWs implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToWs().getClient();
-    // console.log(request);
     
     const token = this.extractTokenFromHeader(request);    
     if (!token) {

@@ -31,7 +31,9 @@ export class GroupController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.groupService.remove(+id);
+  async remove(@Param('id') id: string) {
+    const res = await this.groupService.remove(+id);
+    this.ws.refresh(res.projectId.toString());
+    return res
   }
 }

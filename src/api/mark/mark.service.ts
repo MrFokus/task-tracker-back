@@ -43,7 +43,20 @@ export class MarkService {
     return `This action updates a #${id} mark`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} mark`;
+  async remove(id: number) {
+    let markProject = await this.markRepo.findOne({
+      relations: {
+        project:true
+      },
+      where: {
+        id:id
+      }
+    })
+    await this.markRepo.delete(id);
+    return {
+      markId: markProject.id,
+      projectId: markProject.project.id,
+    }
+
   }
 }
