@@ -40,6 +40,6 @@ export class User {
   // @ManyToMany(() => Team, (team) => team.users)
   // teams: Team[];
 
-  @ManyToMany(() => Task, (task) => task.users)
+  @ManyToMany(() => Task, (task) => task.participants)
   tasks: Task[];
 }

@@ -22,14 +22,14 @@ import { Project } from "../project/project.entity";
 // @Index("contains_fk", ["projectId"], {})
 @Entity("task", { schema: "public" })
 export class Task {
-  @PrimaryGeneratedColumn("increment",{ name: "id" })
+  @PrimaryGeneratedColumn("increment", { name: "id" })
   id: number;
 
-  @Column("integer", { name: "project_id" })
-  projectId: number;
+  // @Column("integer", { name: "project_id" })
+  // projectId: number;
 
-  @Column("integer", { name: "column_id" })
-  columnId: number;
+  // @Column("integer", { name: "column_id" })
+  // columnId: number;
 
   @Column("character varying", { name: "name", length: 128 })
   name: string;
@@ -40,11 +40,11 @@ export class Task {
   @Column("date", { name: "date_end", nullable: true })
   dateEnd: string | null;
 
-  @Column("character varying", { name: "color", nullable: true, length: 8 })
-  color: string | null;
+  @Column("character varying", { name: "label", nullable: true, length: 256 })
+  label: string | null;
 
-  @Column("boolean", { name: "is_template", nullable: true })
-  isTemplate: boolean | null;
+  @Column("character varying", { name: "description", nullable: true })
+  description: string | null;
 
   @OneToMany(() => Attachment, (attachment) => attachment.task)
   attachments: Attachment[];
@@ -55,11 +55,11 @@ export class Task {
     joinColumn: {
       name: "task_id",
       referencedColumnName: "id"
-  },
-  inverseJoinColumn: {
+    },
+    inverseJoinColumn: {
       name: "mark_id",
       referencedColumnName: "id"
-  }
+    }
   })
   marks: Mark[];
 
@@ -70,7 +70,7 @@ export class Task {
     inverseJoinColumns: [{ name: "user_id", referencedColumnName: "id" }],
     schema: "public",
   })
-  users: User[];
+  participants: User[];
 
   @OneToMany(() => Subtask, (subtask) => subtask.task)
   subtasks: Subtask[];
@@ -88,4 +88,19 @@ export class Task {
   })
   @JoinColumn([{ name: "project_id", referencedColumnName: "id" }])
   project: Project;
+
+  @ManyToMany(() => Task, (task) => task.extends)
+  @JoinTable({
+    name: 'extend',
+    joinColumn: {
+      name: "task_id",
+      referencedColumnName: "id"
+    },
+    inverseJoinColumn: {
+      name: "id",
+      referencedColumnName: "id"
+    }
+  })
+  extends: Task[]
+
 }

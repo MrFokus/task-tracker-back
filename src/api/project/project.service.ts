@@ -68,7 +68,13 @@ export class ProjectService {
       relations: {
         groups: true,
         teams: true,
-        
+        tasks: {
+          subtasks: true,
+          attachments: true,
+          participants: true,
+          marks: true,
+          column:true,
+        }
       },
       where: {
         id: id,

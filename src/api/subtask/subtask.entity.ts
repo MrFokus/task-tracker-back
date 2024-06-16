@@ -15,8 +15,8 @@ export class Subtask {
   @Column("character varying", { name: "name", length: 256 })
   name: string;
 
-  @Column("character varying", { name: "status", length: 128 })
-  status: string;
+  @Column("bool", { name: "status"})
+  status: boolean;
 
   @ManyToOne(() => Task, (task) => task.subtasks, {
     onDelete: "RESTRICT",

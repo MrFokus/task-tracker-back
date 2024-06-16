@@ -23,7 +23,7 @@ export class Mark {
   @ManyToOne(() => Project, (project) => project.marks)
   project:Project
 
-  @ManyToMany(() => Task, (task) => task.marks)
+  @ManyToMany(() => Task, (task) => task.marks,{cascade: true})
   task: Task;
 
 }
