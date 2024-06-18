@@ -73,7 +73,7 @@ export class ProjectService {
           attachments: true,
           participants: true,
           marks: true,
-          column:true,
+          column: true,
         }
       },
       where: {
@@ -88,6 +88,13 @@ export class ProjectService {
       const order = ['Запланировано', 'В работе', 'Выполнено'].reverse();
       return order.indexOf(b.name) - order.indexOf(a.name);
     });
+    res.tasks.map(t => {
+      return t.participants.map(p => {
+        if (p.photo)
+          p.photo = process.env.PATH_FILE + p.photo
+        return p
+      })
+    })
 
     return res
 
@@ -95,11 +102,21 @@ export class ProjectService {
 
 
 
-  update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
-  }
+update(id: number, updateProjectDto: UpdateProjectDto) {
+  return `This action updates a #${id} project`;
+}
 
-  remove(id: number) {
-    return `This action removes a #${id} project`;
+remove(id: number) {
+  return `This action removes a #${id} project`;
+}
+  async uploadFile(file, projectId) {
+  let project = await this.projectRepo.findOneBy({
+    id: projectId
+  })
+  if (project) {
+    project.photo = file[0].filename
+    this.projectRepo.save(project)
   }
+  return process.env.PATH_FILE + project.photo
+}
 }

@@ -63,7 +63,7 @@ export class TaskService {
         subtasks: true,
         attachments: true,
         participants: true,
-        column:true
+        column: true,
       },
       where: {
         id:id
@@ -134,6 +134,10 @@ export class TaskService {
     
     await this.taskRepo.save(task)
     return task
+  }
+
+  uploadFiles(files: File[]) {
+    
   }
 
   remove(id: number) {

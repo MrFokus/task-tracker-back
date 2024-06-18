@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, Req } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { editFileName } from 'src/mixin/editFileName';
 
 @Controller('project')
 export class ProjectController {
@@ -30,5 +33,18 @@ export class ProjectController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.projectService.remove(+id);
+  }
+  @Post('upload/:id')
+  @UseInterceptors(
+    FilesInterceptor('file', 20, {
+      storage: diskStorage({
+        destination: './uploads/',
+        filename: editFileName,
+      }),
+      //   fileFilter: imageFileFilter,
+    }),
+  )
+  uploadMultipleFiles(@UploadedFiles() file, @Param('id') projectId: number) {
+    return this.projectService.uploadFile(file,projectId)
   }
 }

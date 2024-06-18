@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { ProjectWsGateway } from '../project/project-ws.gateway';
+import { AnyFilesInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { editFileName } from 'src/mixin/editFileName';
 
 @Controller('task')
 export class TaskController {
@@ -33,7 +36,7 @@ export class TaskController {
   }
 
   @Put('/swap-group')
-  async swapGroup(@Body() body: { taskId:number, groupId:number}) {
+  async swapGroup(@Body() body: { taskId: number, groupId: number }) {
     let res = await this.taskService.swapGroup(body.taskId, body.groupId);
     this.ws.refresh(res.project.id.toString())
     return res
@@ -42,5 +45,20 @@ export class TaskController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.taskService.remove(+id);
+  }
+  @Post('upload')
+  @UseInterceptors(
+    FilesInterceptor('files', 20, {
+      storage: diskStorage({
+        destination: './uploads/',
+        filename: editFileName,
+      }),
+      //   fileFilter: imageFileFilter,
+    }),
+  )
+  uploadMultipleFiles(@UploadedFiles() files) {
+    this.taskService.uploadFiles(files)
+    console.log(files);
+    return '';
   }
 }

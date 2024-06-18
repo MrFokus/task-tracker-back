@@ -53,7 +53,7 @@ export class UserService {
       return {
         name: user.name,
         mail: user.mail,
-        photo: user.photo
+        photo: process.env.PATH_FILE +user.photo
       }
     }
     catch (e) {
@@ -63,10 +63,11 @@ export class UserService {
   }
 
   async searchUser(name: string) {
-    return (await this.userRepository.findBy({
+    let users = (await this.userRepository.findBy({
       name: Like(`%${name}%`),
       login: Like(`%${name}%`)
     }))
+    return users.map(user => ({...user, photo:process.env.PATH_FILE + user.photo }))
   }
 
   async getUserInTeam(teamId: number) {
@@ -105,11 +106,36 @@ export class UserService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    console.log(updateUserDto);
+    let hash 
+    if(updateUserDto.password)
+    hash = await bcrypt.hash(updateUserDto.password, +process.env.PASSWORD_HASH_SALT);
+    let user = await this.userRepository.findOne({
+      where: {
+       id:id
+      }
+    })
+    user.name = updateUserDto.name
+    user.mail = updateUserDto.mail
+    if(hash)
+      user.password = hash
+    return this.userRepository.save(user)
   }
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  async uploadFile(file, userId) {
+    let user = await this.userRepository.findOneBy({
+      id:userId
+    })
+    if (user) {
+      user.photo = file[0].filename
+      this.userRepository.save(user)
+    }
+
+    return process.env.PATH_FILE + user.photo
   }
 }

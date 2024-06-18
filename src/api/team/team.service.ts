@@ -49,7 +49,16 @@ export class TeamService {
         id: id
       }
     })
-
+    result.projects.map(pr => {
+      if( pr.photo)
+      pr.photo = process.env.PATH_FILE + pr.photo
+      return pr
+    });
+    result.participatesTeam.map(pt => {
+      if( pt.user.photo)
+      pt.user.photo = process.env.PATH_FILE + pt.user.photo
+      return pt
+    });
     return result
   }
 
@@ -91,6 +100,7 @@ export class TeamService {
             id: el.user_id,
             name: el.user_name,
             role: el.role_name,
+            photo:el.user_photo?  process.env.PATH_FILE + el.user_photo:null
           }
         })
       }
@@ -121,7 +131,7 @@ export class TeamService {
   }
 
   async getUserTeam(teamId: number) {
-    return this.participatesRepo.find({
+    let res = await this.participatesRepo.find({
       select:['user'],
       relations: {
         user: true,
@@ -133,6 +143,12 @@ export class TeamService {
         }
       }
     })
+    return res.map(el => {
+      if( el.user.photo)
+        el.user.photo = process.env.PATH_FILE + el.user.photo
+      return el
+    })
+     
   }
 
   findOne(id: number) {
