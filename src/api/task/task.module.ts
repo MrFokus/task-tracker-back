@@ -8,9 +8,10 @@ import { User } from '../user/user.entity';
 import { Subtask } from '../subtask/subtask.entity';
 import { ProjectModule } from '../project/project.module';
 import { Group } from '../group/group.entity';
+import { Attachment } from '../attachment/attachment.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Task,Mark,User,Subtask,Group]),ProjectModule],
+  imports:[TypeOrmModule.forFeature([Task,Mark,User,Subtask,Group,Attachment]),ProjectModule],
   controllers: [TaskController],
   providers: [TaskService],
 })

@@ -1,3 +1,4 @@
+import { Attachment } from './../attachment/attachment.entity';
 import { BadGatewayException, Injectable } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -21,7 +22,9 @@ export class TaskService {
     @InjectRepository(Subtask)
     private subTaskRepo: Repository<Subtask>,
     @InjectRepository(Group)
-    private groupRepo: Repository<Group>
+    private groupRepo: Repository<Group>,
+    @InjectRepository(Attachment)
+    private attachmentRepo: Repository<Attachment>
 
   ) { }
   async create(createTaskDto: CreateTaskDto) {
@@ -34,21 +37,39 @@ export class TaskService {
       dateEnd: new Date(createTaskDto.dateEnd).toISOString(),
       label: createTaskDto.label,
     })
-    let marksId: { id: number }[] = createTaskDto.marks.map(m => ({ id: m.id }))
-    let marks = await this.markRepo.find({
-      where: marksId
-    })
-    task.marks = marks
 
-    let participantsId :{ id: number }[] = createTaskDto.participants.map(p => ({ id: p.id }))
-    let participants = await this.userRepo.find({
-      where: participantsId
-    })
-    task.participants = participants
-    let res = await this.subTaskRepo.save(createTaskDto.checkList.map(st => ({ name: st.name, status: st.status, task: task })))
-    console.log(res);
+    if (createTaskDto.marks.length) {
+      let marksId: { id: number }[] = createTaskDto.marks.map(m => ({ id: m.id }))
+      let marks = await this.markRepo.find({
+        where: marksId
+      })
+      task.marks = marks
+
+    }
+    else {
+      task.marks = []
+    }
     
+    if (createTaskDto.participants.length) {
+      let participantsId: { id: number }[] = createTaskDto.participants.map(p => ({ id: p.id }))
+      let participants = await this.userRepo.find({
+        where: participantsId
+      })
+      task.participants = participants
+
+    }
+    else {
+      task.participants = []
+    }
+
+    let res = await this.subTaskRepo.save(createTaskDto.checkList.map(st => ({ name: st.name, status: st.status, task: task })))
     await this.taskRepo.save(task)
+    task.attachments = task.attachments.map((att) => {
+      att.path = process.env.FILE_PATH
+      return att
+    })
+    console.log(task.attachments);
+    
     return task
   }
 
@@ -56,8 +77,8 @@ export class TaskService {
     return ''
   }
 
-  findOne(id: number) {
-    return this.taskRepo.findOne({
+  async findOne(id: number) {
+    let task = await this.taskRepo.findOne({
       relations: {
         marks:true,
         subtasks: true,
@@ -69,6 +90,13 @@ export class TaskService {
         id:id
       }
     })
+
+    
+    task.attachments = task.attachments.map((att) => {
+      att.path = process.env.PATH_FILE + att.path 
+      return att
+    })
+    return task
   }
 
   async swapGroup(idTask: number, idGroup: number) {
@@ -136,8 +164,24 @@ export class TaskService {
     return task
   }
 
-  uploadFiles(files: File[]) {
-    
+  async uploadFiles(files: any[], taskId:number) {
+    let task = await this.taskRepo.findOne({
+      relations: {
+        project: true,
+        attachments:true
+      },
+      where: {
+        id:taskId,
+      }
+    })
+    if (task) {      
+
+      for (let i = 0; i < files.length; i++) { 
+        let attachmentRes = await this.attachmentRepo.save({ task: task, name: files[i].originalname, path: files[i].filename })
+        task.attachments.push(attachmentRes)
+      }
+    }
+    return this.taskRepo.save(task)
   }
 
   remove(id: number) {

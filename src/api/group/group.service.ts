@@ -4,12 +4,15 @@ import { UpdateGroupDto } from './dto/update-group.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Group } from './group.entity';
+import { Task } from '../task/task.entity';
 
 @Injectable()
 export class GroupService {
   constructor(
     @InjectRepository(Group)
-    private readonly groupRepo: Repository<Group>
+    private readonly groupRepo: Repository<Group>,
+    @InjectRepository(Task)
+    private readonly taskRepo: Repository<Task>
   ) { 
   }
   INIT_GROUP = [
@@ -50,9 +53,28 @@ export class GroupService {
   }
 
   async remove(id: number) {
-    let group = await this.groupRepo.findOneBy({
-      id: id
+    let group = await this.groupRepo.findOne({
+      relations: {
+        tasks:true
+      },
+      where: {
+        id: id,
+      }
     })
+    
+    let toGroup = await this.groupRepo.findOne({
+      relations: {
+        tasks:true
+      },
+      where: {
+        name: this.INIT_GROUP[this.INIT_GROUP.length - 1].name,
+      }
+    })
+    console.log(group,toGroup);
+
+    
+    toGroup.tasks.push(...group.tasks)
+    this.groupRepo.save(toGroup)
     if(!this.INIT_GROUP.find(el=>el.name == group.name))
     await this.groupRepo.delete(id)
     return group

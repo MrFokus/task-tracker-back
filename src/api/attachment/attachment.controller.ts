@@ -2,10 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { AttachmentService } from './attachment.service';
 import { CreateAttachmentDto } from './dto/create-attachment.dto';
 import { UpdateAttachmentDto } from './dto/update-attachment.dto';
+import { ProjectWsGateway } from '../project/project-ws.gateway';
 
 @Controller('attachment')
 export class AttachmentController {
-  constructor(private readonly attachmentService: AttachmentService) {}
+  constructor(private readonly attachmentService: AttachmentService, private readonly ws: ProjectWsGateway) {}
 
   @Post()
   create(@Body() createAttachmentDto: CreateAttachmentDto) {
@@ -28,7 +29,11 @@ export class AttachmentController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.attachmentService.remove(+id);
+  async remove(@Param('id') id: string) {
+    let res = await this.attachmentService.remove(+id);
+    if (res.task.id) {
+      this.ws.refresh(res.task.id.toString())
+    }
+    return res
   }
 }

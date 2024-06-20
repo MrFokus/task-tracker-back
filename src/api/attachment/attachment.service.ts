@@ -1,9 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAttachmentDto } from './dto/create-attachment.dto';
 import { UpdateAttachmentDto } from './dto/update-attachment.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Attachment } from './attachment.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AttachmentService {
+  constructor(
+    @InjectRepository(Attachment)
+    private attachmentRepo: Repository<Attachment>
+  ){}
   create(createAttachmentDto: CreateAttachmentDto) {
     return 'This action adds a new attachment';
   }
@@ -20,7 +27,16 @@ export class AttachmentService {
     return `This action updates a #${id} attachment`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} attachment`;
+  async remove(id: number) {
+    let task = await this.attachmentRepo.findOne({
+      relations: {
+        task:true
+      },
+      where:{
+        id:id
+      }
+    })
+    let res = this.attachmentRepo.delete(id)
+    return task
   }
 }

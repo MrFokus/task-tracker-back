@@ -9,11 +9,14 @@ export class Attachment {
   @PrimaryGeneratedColumn("increment",{ name: "id" })
   id: number;
 
-  @Column("integer", { name: "task_id" })
-  taskId: number;
+  // @Column("integer", { name: "task_id" })
+  // taskId: number;
 
   @Column("character varying", { name: "path", length: 1024 })
   path: string;
+
+  @Column("character varying", { name: "name", length: 1024 })
+  name: string;
 
   @ManyToOne(() => Task, (task) => task.attachments, {
     onDelete: "RESTRICT",

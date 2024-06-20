@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import * as bcrypt from "bcrypt";
 import { AuthService } from '../auth/auth.service';
+import { log } from 'console';
 
 @Injectable()
 export class UserService {
@@ -53,7 +54,7 @@ export class UserService {
       return {
         name: user.name,
         mail: user.mail,
-        photo: process.env.PATH_FILE +user.photo
+        photo:user.photo?process.env.PATH_FILE +user.photo:undefined
       }
     }
     catch (e) {
@@ -63,11 +64,14 @@ export class UserService {
   }
 
   async searchUser(name: string) {
-    let users = (await this.userRepository.findBy({
-      name: Like(`%${name}%`),
-      login: Like(`%${name}%`)
+    let users = (await this.userRepository.find({where:[
+      { name: Like(`%${name}%`), },
+      { login: Like(`%${name}%`) }
+    ]
     }))
-    return users.map(user => ({...user, photo:process.env.PATH_FILE + user.photo }))
+    console.log(users);
+    
+    return users.map(user => ({...user, photo:user.photo?process.env.PATH_FILE +user.photo:undefined }))
   }
 
   async getUserInTeam(teamId: number) {

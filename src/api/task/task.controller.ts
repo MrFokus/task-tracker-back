@@ -46,7 +46,7 @@ export class TaskController {
   remove(@Param('id') id: string) {
     return this.taskService.remove(+id);
   }
-  @Post('upload')
+  @Post('upload/:id')
   @UseInterceptors(
     FilesInterceptor('files', 20, {
       storage: diskStorage({
@@ -56,9 +56,10 @@ export class TaskController {
       //   fileFilter: imageFileFilter,
     }),
   )
-  uploadMultipleFiles(@UploadedFiles() files) {
-    this.taskService.uploadFiles(files)
+  async uploadMultipleFiles(@Param('id') taskId: number, @UploadedFiles() files) {
     console.log(files);
-    return '';
+    
+    let res = await this.taskService.uploadFiles(files, taskId)
+    this.ws.refresh(res.project.id.toString())
   }
 }

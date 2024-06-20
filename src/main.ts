@@ -11,6 +11,6 @@ async function bootstrap() {
   console.log(__dirname)
   app.useStaticAssets(join(__dirname,'../'))
   app.setViewEngine('hbs');
-  await app.listen(8000);
+  await app.listen(8000,'0.0.0.0');
 }
 bootstrap();
