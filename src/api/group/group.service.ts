@@ -25,6 +25,9 @@ export class GroupService {
     {
       name: 'Выполнено'
     },
+    {
+      name: 'Архив'
+    }
   ]
 
 

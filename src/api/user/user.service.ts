@@ -52,6 +52,7 @@ export class UserService {
       console.log(user);
 
       return {
+        id:user.id,
         name: user.name,
         mail: user.mail,
         photo:user.photo?process.env.PATH_FILE +user.photo:undefined

@@ -102,8 +102,8 @@ export class ProjectService {
 
 
 
-update(id: number, updateProjectDto: UpdateProjectDto) {
-  return `This action updates a #${id} project`;
+async update(id: number, updateProjectDto: UpdateProjectDto) {
+
 }
 
 remove(id: number) {

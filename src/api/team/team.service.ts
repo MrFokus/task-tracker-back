@@ -155,8 +155,22 @@ export class TeamService {
     return `This action returns a #${id} team`;
   }
 
-  update(id: number, updateTeamDto: UpdateTeamDto) {
-    return `This action updates a #${id} team`;
+  async update(id: number, updateTeamDto: UpdateTeamDto) {
+    let team = await this.teamRepo.findOne({
+      relations:{
+        participatesTeam:true
+      },
+      where:{
+        id:id
+      }
+    })
+    for(let i=0; i<team.participatesTeam.length;i++){
+     await this.participatesRepo.delete(team.participatesTeam[i].id)
+    }
+    let participates = await this.participatesRepo.save(updateTeamDto.participates.map((el)=>({user:{id:el.id},role:{id:el.role},team:{id:team.id}})));
+    team.participatesTeam = participates
+    return team
+
   }
 
   remove(id: number) {
