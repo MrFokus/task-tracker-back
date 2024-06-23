@@ -55,6 +55,7 @@ export class UserService {
         id:user.id,
         name: user.name,
         mail: user.mail,
+        login:user.login,
         photo:user.photo?process.env.PATH_FILE +user.photo:undefined
       }
     }
@@ -107,8 +108,12 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    let user = await this.userRepository.findOneBy({
+      id:id
+    });
+    user.photo = process.env.PATH_FILE + user.photo
+    return user
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {

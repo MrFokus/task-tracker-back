@@ -135,7 +135,8 @@ export class TeamService {
       select:['user'],
       relations: {
         user: true,
-        team:true
+        team:true,
+        role:true,
       },
       where: {
         team: {

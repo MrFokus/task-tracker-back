@@ -49,7 +49,7 @@ export class TaskService {
     else {
       task.marks = []
     }
-    
+
     if (createTaskDto.participants.length) {
       let participantsId: { id: number }[] = createTaskDto.participants.map(p => ({ id: p.id }))
       let participants = await this.userRepo.find({
@@ -64,12 +64,13 @@ export class TaskService {
 
     let res = await this.subTaskRepo.save(createTaskDto.checkList.map(st => ({ name: st.name, status: st.status, task: task })))
     await this.taskRepo.save(task)
-    task.attachments = task.attachments.map((att) => {
-      att.path = process.env.FILE_PATH
-      return att
-    })
-    console.log(task.attachments);
-    
+    if (task.attachments?.length) {
+      task.attachments = task.attachments.map((att) => {
+        att.path = process.env.FILE_PATH
+        return att
+      })
+    }
+
     return task
   }
 
@@ -80,51 +81,51 @@ export class TaskService {
   async findOne(id: number) {
     let task = await this.taskRepo.findOne({
       relations: {
-        marks:true,
+        marks: true,
         subtasks: true,
         attachments: true,
         participants: true,
         column: true,
       },
       where: {
-        id:id
+        id: id
       }
     })
 
-    
+
     task.attachments = task.attachments.map((att) => {
-      att.path = process.env.PATH_FILE + att.path 
+      att.path = process.env.PATH_FILE + att.path
       return att
     })
     return task
   }
 
   async swapGroup(idTask: number, idGroup: number) {
-    console.log(idTask,idGroup);
-    
+    console.log(idTask, idGroup);
+
     let task = await this.taskRepo.findOne({
       relations: {
-        project:true
+        project: true
       },
       where: {
         id: idTask
       }
     })
     let group = await this.groupRepo.findOneBy({
-      id:idGroup
+      id: idGroup
     })
 
     if (task && group) {
       task.column = group
     }
 
-    
+
     return this.taskRepo.save(task)
   }
 
   async update(id: number, updateTaskDto: UpdateTaskDto) {
     let task = await this.taskRepo.save({
-      id:id,
+      id: id,
       project: { id: updateTaskDto.projectId },
       description: updateTaskDto.description,
       column: { id: updateTaskDto.groupId },
@@ -144,7 +145,7 @@ export class TaskService {
     else {
       task.marks = []
     }
-    
+
     if (updateTaskDto.participants.length) {
       let participantsId: { id: number }[] = updateTaskDto.participants.map(p => ({ id: p.id }))
       let participants = await this.userRepo.find({
@@ -155,28 +156,28 @@ export class TaskService {
     }
     else {
       task.participants = []
-      
+
     }
-    let res = await this.subTaskRepo.save(updateTaskDto.checkList.map(st => ({id: st.id, name: st.name, status: st.status, task: task })))
+    let res = await this.subTaskRepo.save(updateTaskDto.checkList.map(st => ({ id: st.id, name: st.name, status: st.status, task: task })))
     console.log(res);
-    
+
     await this.taskRepo.save(task)
     return task
   }
 
-  async uploadFiles(files: any[], taskId:number) {
+  async uploadFiles(files: any[], taskId: number) {
     let task = await this.taskRepo.findOne({
       relations: {
         project: true,
-        attachments:true
+        attachments: true
       },
       where: {
-        id:taskId,
+        id: taskId,
       }
     })
-    if (task) {      
+    if (task) {
 
-      for (let i = 0; i < files.length; i++) { 
+      for (let i = 0; i < files.length; i++) {
         let attachmentRes = await this.attachmentRepo.save({ task: task, name: files[i].originalname, path: files[i].filename })
         task.attachments.push(attachmentRes)
       }

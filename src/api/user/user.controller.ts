@@ -30,6 +30,10 @@ export class UserController {
   searchUser(@Query('name') name: string) {
     return this.userService.searchUser(name)
   }
+  @Get(':id')
+  getOne(@Param('id') id:string) {
+    return this.userService.findOne(+id)
+  }
 
   // @Get('/project')
   // getUserInProject(@Query('projectId') projectId: number) {
